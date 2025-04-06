@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Paper, 
   TextField, 
@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 import { useSafeAppsSDK } from '@safe-global/safe-apps-react-sdk';
+import { SafeAppProvider } from '@safe-global/safe-apps-provider';
 import { ethers } from 'ethers';
 
 import { Token, TokenAmount } from '../types';
@@ -38,6 +39,12 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ tokens, selectedTokens, o
   const [isMax, setIsMax] = useState(false);
   const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  
+  // Create ethers provider using Safe provider
+  const provider = useMemo(() => {
+    const safeProvider = new SafeAppProvider(safe, sdk);
+    return new ethers.BrowserProvider(safeProvider as any);
+  }, [sdk, safe]);
 
   // Filter tokens based on search term
   const filteredTokens = tokens.filter(token => 
@@ -53,8 +60,6 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ tokens, selectedTokens, o
       setLoading(true);
       
       try {
-        // Get provider from SDK 
-        const provider = new ethers.BrowserProvider(sdk);
         const balances: Record<string, string> = {};
         
         // Load balances in parallel
@@ -74,7 +79,7 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ tokens, selectedTokens, o
     };
     
     loadBalances();
-  }, [tokens, safe.safeAddress, sdk.safe]);
+  }, [tokens, safe.safeAddress, provider]);
 
   const handleTokenClick = (token: Token) => {
     setSelectedToken(token);

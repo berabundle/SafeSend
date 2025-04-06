@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container, Box, Typography, CircularProgress } from '@mui/material';
 import { useSafeAppsSDK } from '@safe-global/safe-apps-react-sdk';
+import { SafeAppProvider } from '@safe-global/safe-apps-provider';
 import { ethers } from 'ethers';
 
 import TokenSelector from './components/TokenSelector';
@@ -29,6 +30,12 @@ const App: React.FC = () => {
   const [selectedTokens, setSelectedTokens] = useState<TokenAmount[]>([]);
   const [recipient, setRecipient] = useState('');
   const [error, setError] = useState<string | null>(null);
+  
+  // Create ethers provider using Safe provider
+  const provider = useMemo(() => {
+    const safeProvider = new SafeAppProvider(safe, sdk);
+    return new ethers.BrowserProvider(safeProvider as any);
+  }, [sdk, safe]);
 
   useEffect(() => {
     const loadTokens = async () => {
