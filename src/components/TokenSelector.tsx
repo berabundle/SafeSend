@@ -53,7 +53,8 @@ const TokenSelector: React.FC<TokenSelectorProps> = ({ tokens, selectedTokens, o
       setLoading(true);
       
       try {
-        const provider = new ethers.BrowserProvider(sdk.safe.getProvider());
+        // Get provider from SDK 
+        const provider = new ethers.BrowserProvider(sdk);
         const balances: Record<string, string> = {};
         
         // Load balances in parallel

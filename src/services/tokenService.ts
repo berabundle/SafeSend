@@ -1,4 +1,5 @@
 import { TokenList, Token } from '../types';
+import { ethers } from 'ethers';
 
 const TOKENS_URL = 'https://raw.githubusercontent.com/berachain/metadata/refs/heads/main/src/tokens/mainnet.json';
 
